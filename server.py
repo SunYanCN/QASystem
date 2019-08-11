@@ -17,3 +17,7 @@ def query():
     answer_score_list = qasystem.query(question,3);
     response = jsonify({'path': 'qasystem', 'query': params['query'], 'answers': answer_score_list});
     return response;
+
+if __name__ == "__main__":
+    
+    app.run();
