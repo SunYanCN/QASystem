@@ -12,10 +12,9 @@ def index():
 
 @app.route('/qasystem', methods = ['POST'])
 def query():
-    params = request.get_json();
-    question = params['query'];
+    question = request.args.get('query');
     answer_score_list = qasystem.query(question,3);
-    response = jsonify({'path': 'qasystem', 'query': params['query'], 'answers': answer_score_list});
+    response = jsonify({'path': 'qasystem', 'query': question, 'answers': answer_score_list});
     return response;
 
 if __name__ == "__main__":
