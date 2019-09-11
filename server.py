@@ -4,11 +4,13 @@ from threading import Thread, Lock;
 from time import gmtime, strftime;
 from flask import Flask, request, jsonify;
 import MySQLdb;
+import numpy as np;
 from QASystem import QASystem;
 
+bert_num = 1;
+
 app = Flask(__name__);
-qasystem = QASystem();
-mutex = Lock();
+qasystems = [(QASystem(), Lock()) for i in range(bert_num)];
 
 @app.route('/')
 def index():
@@ -17,9 +19,10 @@ def index():
 @app.route('/qasystem', methods = ['POST'])
 def query():
     question = request.args.get('query');
-    mutex.acquire();
-    answer_score_list = qasystem.query(question,3);
-    mutex.release();
+    index = np.random.randint(bert_num);
+    qasystems[index][1].acquire();
+    answer_score_list = qasystems[index][0].query(question,3);
+    qasystems[index][1].release();
     response = jsonify({'path': 'qasystem', 'query': question, 'answers': answer_score_list});
     sql = "insert into wd_cust_questions (id, question, status, time) values ( NULL, \'" + question + "\', 0, \'" + strftime("%Y-%m-%d %H:%M:%S", gmtime()) + "\')";
     try:
