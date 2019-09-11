@@ -14,7 +14,7 @@ def main(host):
         json_response = requests.post(host + '/qasystem', data = data, headers = {'content-type': 'application/json'});
         answers = json.loads(json_response.text)['answers'];
         for answer,score in answers.items():
-            print('(' + str(score) + '):' + answer);
+            print('(' + str(score[0]) + '):' + answer);
 
 if __name__ == "__main__":
 
