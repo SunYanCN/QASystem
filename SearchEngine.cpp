@@ -58,20 +58,20 @@ SearchEngine& SearchEngine::operator=(const SearchEngine& sg) {
 }
 
 dict SearchEngine::query(string question, unsigned int count) {
-  vector<std::tuple<string, float> > scores;
+  vector<std::tuple<string, string, float> > scores;
   for (auto& qa : qa_list_) {
     float score = bm25(question, qa.query_index_);
-    scores.push_back(std::make_tuple(qa.answer_, score));
+    scores.push_back(std::make_tuple(qa.query_, qa.answer_, score));
   }
   // sort in descend order.
   sort(scores.begin(), scores.end(),
-       [](const std::tuple<string, float>& a, const std::tuple<string, float>& b){
-         return std::get<1>(a) > std::get<1>(b);    
+       [](const std::tuple<string, string, float>& a, const std::tuple<string, string, float>& b){
+         return std::get<2>(a) > std::get<2>(b);    
        });
   if (scores.size() > count) scores.resize(count);
   dict answer_scores;
   for (auto& score: scores) {
-    answer_scores[std::get<0>(score)] = std::get<1>(score);
+    answer_scores[std::get<1>(score)] = boost::python::make_tuple(std::get<2>(score), std::get<0>(score));
   }
   return answer_scores;
 }

@@ -1,5 +1,5 @@
-CXXFLAGS= `pkg-config --cflags python3` -Icppjieba/include -Icppjieba/deps -Icppjieba/deps/gtest/include -fPIC -O2
-LIBS=`pkg-config --libs python3` -lboost_python3 -lboost_filesystem -lboost_regex -lboost_serialization
+CXXFLAGS= `pkg-config --cflags python-3.6` -Icppjieba/include -Icppjieba/deps -Icppjieba/deps/gtest/include -fPIC -O2 -std=c++0x
+LIBS=`pkg-config --libs python-3.6` -lboost_python3 -lboost_filesystem -lboost_regex -lboost_serialization
 OBJS=$(patsubst %.cpp,%.o,$(wildcard *.cpp))
 
 all: create_dataset search_engine.so

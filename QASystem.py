@@ -28,9 +28,7 @@ class QASystem(object):
         answer_totalscores = dict();
         for answer, match in answer_scores.items():
             _, relevance = self.predictor.predict(question, answer);
-            answer_totalscores[answer] = exp(match) + exp(relevance);
-        # sort in descend order of total score
-        sorted(answer_totalscores, key = operator.itemgetter(1), reverse = True);
+            answer_totalscores[answer] = (exp(match[0]) + exp(relevance), match[1],);
         return answer_totalscores;
     
     def updateDB(self, file):
