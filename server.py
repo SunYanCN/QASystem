@@ -7,7 +7,7 @@ import MySQLdb;
 import numpy as np;
 from QASystem import QASystem;
 
-bert_num = 1;
+bert_num = 10;
 
 app = Flask(__name__);
 qasystems = [(QASystem(), Lock()) for i in range(bert_num)];
@@ -21,7 +21,9 @@ def query():
     question = request.args.get('query');
     index = np.random.randint(bert_num);
     qasystems[index][1].acquire();
+    print("calling " + str(index) + "th bert");
     answer_score_list = qasystems[index][0].query(question,3);
+    print("ending " + str(index) + "th bert");
     qasystems[index][1].release();
     response = jsonify({'path': 'qasystem', 'query': question, 'answers': answer_score_list});
     sql = "insert into wd_cust_questions (id, question, status, time) values ( NULL, \'" + question + "\', 0, \'" + strftime("%Y-%m-%d %H:%M:%S", gmtime()) + "\')";
