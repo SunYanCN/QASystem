@@ -6,8 +6,8 @@ this is a QASystem implemented with BERT
 install with command
 
 ```bash
-pip3 install -U tf-nightly-2.0-preview bert-for-tf2 flask
-sudo apt install libboost-all-dev
+pip3 install -U tf-nightly-2.0-preview bert-for-tf2 flask flask-socketio celery gevent
+sudo apt install libboost-all-dev rabbitmq-server
 ```
 
 # download pretrained bert model for Chinese language
@@ -37,7 +37,8 @@ python3 Predictor.py
 
 run the QA system server by
 ```bash
-FLASK_APP=server.py flask run
+bash start_workers.sh
+python3 server.py
 ```
 stop the server by Ctrl+C
 
