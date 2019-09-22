@@ -4,7 +4,6 @@ from threading import Thread, Lock;
 from time import gmtime, strftime;
 from flask import Flask, request, jsonify, session;
 from flask_socketio import SocketIO, join_room;
-import uuid;
 import worker;
 
 app = Flask(__name__);
@@ -18,7 +17,6 @@ def index():
 @app.route('/qasystem', methods = ['POST'])
 def query():
 
-    sid = str(session['uid']);
     task = worker.query.delay(request.args.get('query'));
     return jsonify({'id': task.id});
 
