@@ -1,15 +1,15 @@
 #!/usr/bin/python3
 
+from flask_socketio import SocketIO;
 from celery import Celery;
 import MySQLdb;
 from urllib3 import PoolManager;
 from QASystem import QASystem;
 
-celery = Celery('worker', broker = 'amqp://');
+celery = Celery('worker', broker = 'amqp://guest:guest@localhost:5672');
+socketio = SocketIO(message_queue = "amqp:///socketio");
 qasystem = QASystem();
 http = PoolManager();
-
-host = 'http://xxx.com';
 
 class QAWorker(celery.Task):
 
@@ -18,14 +18,14 @@ class QAWorker(celery.Task):
 
     def on_success(self, retval, task_id, args, kwargs):
         print('success! {0}'.format(retval));
-        retval['task_id'] = task_id;
-        # send session id to xxx
-        http.request('POS', host, body = json.dumps(retval), headers = {"content-type": "application/json"});
+        retval['id'] = task_id;
+        # send back message
+        socketio.emit('answer', retval, namespace = "/query");
 
     def on_retry(self, exc, task_id, args, kwargs, einfo):
         print("retry..." + task_id);
 
-@celery.task
+@celery.task(base = QAWorker)
 def query(question):
 
     global qasystem;
@@ -42,3 +42,4 @@ def query(question):
       db.close();
     except: pass;
     return response;
+

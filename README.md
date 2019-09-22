@@ -37,6 +37,7 @@ python3 Predictor.py
 
 run the QA system server by
 ```bash
+sudo systemctl start rabbitmq-server
 bash start_workers.sh
 python3 server.py
 ```
