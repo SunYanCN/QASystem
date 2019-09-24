@@ -45,4 +45,4 @@ def af_request(resp):
 
 if __name__ == "__main__":
 
-    socketio.run(app, host = '172.17.0.2', port = 5000);
+    socketio.run(app, host = '192.168.1.102', port = 5000);

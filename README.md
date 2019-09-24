@@ -55,7 +55,7 @@ killall celery
 # test the server
 
 ```bash
-python3 test.py
+firefox test.html
 ```
 
 ![capture](pics/qasystem.png)
