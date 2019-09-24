@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+from flask import jsonify;
 from flask_socketio import SocketIO;
 from celery import Celery;
 import MySQLdb;
@@ -11,24 +12,12 @@ socketio = SocketIO(message_queue = "amqp://guest:guest@localhost:5672");
 qasystem = QASystem();
 http = PoolManager();
 
-class QAWorker(celery.Task):
-
-    def on_failure(self, exc, task_id, args, kwargs, einfo):
-        print('{0!r} failed: {1!r}'.format(task_id, exc));
-
-    def on_success(self, retval, task_id, args, kwargs):
-        print('success! {0}'.format(retval));
-        retval['id'] = task_id;
-        # send back message
-        socketio.emit('answer', retval, namespace = "/query");
-
-    def on_retry(self, exc, task_id, args, kwargs, einfo):
-        print("retry..." + task_id);
-
-@celery.task(base = QAWorker)
-def query(question):
+@celery.task
+def query(question, session):
 
     global qasystem;
+    room = session;
+    namespace = '/query';
     # get answers
     answer_score_list = qasystem.query(question,3);
     response = {'path': 'qasystem', 'query': question, 'answers': answer_score_list};
@@ -41,5 +30,6 @@ def query(question):
       db.commit();
       db.close();
     except: pass;
-    return response;
+    # send the retval value to message room which the client is in.
+    socketio.emit('msg', namespace, room, jsonify(response));
 
