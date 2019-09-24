@@ -47,6 +47,10 @@ bash start_workers.sh
 python3 server.py
 ```
 stop the server by Ctrl+C
+stop workers by
+```bash
+killall celery
+```
 
 # test the server
 
