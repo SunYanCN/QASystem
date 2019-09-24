@@ -7,7 +7,7 @@ from flask_socketio import SocketIO, join_room;
 import worker;
 
 app = Flask(__name__);
-socketio = SocketIO(app, message_queue = 'amqp:///socketio');
+socketio = SocketIO(app, message_queue = 'amqp://guest:guest@localhost:5672');
 
 @app.route('/')
 def index():

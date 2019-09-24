@@ -7,7 +7,7 @@ from urllib3 import PoolManager;
 from QASystem import QASystem;
 
 celery = Celery('worker', broker = 'amqp://guest:guest@localhost:5672');
-socketio = SocketIO(message_queue = "amqp:///socketio");
+socketio = SocketIO(message_queue = "amqp://guest:guest@localhost:5672");
 qasystem = QASystem();
 http = PoolManager();
 

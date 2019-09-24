@@ -10,6 +10,12 @@ pip3 install -U tf-nightly-2.0-preview bert-for-tf2 flask flask-socketio celery 
 sudo apt install libboost-all-dev rabbitmq-server
 ```
 
+celery and socketio need rabbit message queue, so launch it with command
+
+```bash
+sudo systemctl start rabbitmq-server
+```
+
 # download pretrained bert model for Chinese language
 
 download with the following command.
@@ -37,7 +43,6 @@ python3 Predictor.py
 
 run the QA system server by
 ```bash
-sudo systemctl start rabbitmq-server
 bash start_workers.sh
 python3 server.py
 ```
