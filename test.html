@@ -19,7 +19,7 @@
 		</form>
 	        <script>
 			$(document).ready(function() {
-				var socket = io.connect('http://192.168.1.102:5000/query');
+				var socket = io.connect('http://123.115.131.53:5000/query');
 				socket.on('connect',function() {
 					// send join_room event right after connect socket
 					socket.emit('join_room');
@@ -31,7 +31,7 @@
 			$("#queryButton").click(function(e) {
 				$.ajax({
 					type: "POST",
-					url: "http://192.168.1.1.20:5000/query",
+					url: "http://123.115.131.53:5000/query",
 					data: $("#question").serialize(),
 					success:function(data) {
 						// clear reply area
