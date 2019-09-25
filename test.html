@@ -9,7 +9,7 @@
 		<form method='post' id='/queryForm'>
 			<table>
 			<tr>
-				<td>question: <input type="text" id="question" /></td>
+				<td>问题： <input type="text" id="question" /></td>
 				<td><button type="submit" id="queryButton">go</button></td>
 			</tr>
 			<tr>
@@ -31,8 +31,8 @@
 			$("#queryButton").click(function(e) {
 				$.ajax({
 					type: "POST",
-					url: "http://123.115.131.53:5000/query",
-					data: JSON.stringify({'query': $("#question")}),
+					url: "http://123.115.131.53:5000/qasystem",
+					params: JSON.stringify({'query': $("#question")}),
 					success:function(data) {
 						// clear reply area
 						$("#reply").empty();
