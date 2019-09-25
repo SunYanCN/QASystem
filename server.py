@@ -4,14 +4,13 @@ from threading import Thread, Lock;
 from time import gmtime, strftime;
 from flask import Flask, request, jsonify, session;
 from flask_cors import CORS;
-from flask.ext.cors import cross_origin;
 from flask_socketio import SocketIO, join_room;
 import uuid;
 import worker;
 
 app = Flask(__name__);
 app.secret_key = 'swj*2019!'; # secret key for using session
-cors = CORS(app, resources = {r"/query/*":{"origins":"*"}});
+cors = CORS(app, resources = {r"/*":{"origins":"*"}});
 socketio = SocketIO(app, message_queue = 'amqp://guest:guest@localhost:5672');
 
 @app.route('/')
@@ -34,7 +33,6 @@ def socket_connect():
     pass;
 
 @socketio.on('join_room', namespace = '/query')
-@cross_origin()
 def on_room():
     # client start to join the room and wait for reply.
     room = str(session['uid']);
