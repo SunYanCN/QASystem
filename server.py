@@ -3,12 +3,14 @@
 from threading import Thread, Lock;
 from time import gmtime, strftime;
 from flask import Flask, request, jsonify, session;
+from flask_cors import CORS;
 from flask_socketio import SocketIO, join_room;
 import uuid;
 import worker;
 
 app = Flask(__name__);
 app.secret_key = 'swj*2019!'; # secret key for using session
+cors = CORS(app);
 socketio = SocketIO(app, message_queue = 'amqp://guest:guest@localhost:5672');
 
 @app.route('/')
@@ -36,12 +38,14 @@ def on_room():
     room = str(session['uid']);
     join_room(room);
 
+'''
 @app.after_request
 def af_request(resp):
     resp.headers['Access-Control-Allow-Origin'] = '*';
     resp.headers['Access-Control-Allow-Methods'] = 'GET,POST';
     resp.headers['Access-Control-Allow-Headers'] = 'x-requested-with,content-type';
     return resp;
+'''
 
 if __name__ == "__main__":
 

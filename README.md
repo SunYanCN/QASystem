@@ -6,7 +6,7 @@ this is a QASystem implemented with BERT
 install with command
 
 ```bash
-pip3 install -U tf-nightly-2.0-preview bert-for-tf2 flask flask-socketio celery gevent
+pip3 install -U tf-nightly-2.0-preview bert-for-tf2 flask flask-cors flask-socketio celery gevent
 sudo apt install libboost-all-dev rabbitmq-server
 ```
 
