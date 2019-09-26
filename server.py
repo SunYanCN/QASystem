@@ -2,11 +2,15 @@
 
 from flask import Flask, request, jsonify, session;
 from flask_socketio import SocketIO, join_room;
+from flask_cors import CORS, cross_origin;
 from uuid import uuid4;
 from query import query;
 
 app = Flask(__name__);
-app.secret_key = 'swj*2019!'; # secret key for using session
+app.config['SECRET_KEY'] = 'swj*2019!'; # secret key for using sessiona
+app.config['DEBUG'] = True;
+app.config['CORS_HEADERS'] = 'Content-Type';
+cors = CORS(app, resources={r"/*":{"origins":"*"}});
 socketio = SocketIO(app, message_queue = 'amqp://guest:guest@localhost:5672');
 
 @app.route('/')
@@ -32,11 +36,13 @@ def after_request(response):
     return response
 
 @socketio.on('connect')
+@cross_origin()
 def socket_connect():
     # nothing need to be done when client connect with server
     print('connected to socket!');
 
 @socketio.on('join_room', namespace = '/query')
+@cross_origin()
 def on_room():
     # client start to join the room and wait for reply.
     room = str(session['uid']);
@@ -44,4 +50,4 @@ def on_room():
 
 if __name__ == "__main__":
 
-    socketio.run(app, host = '192.168.1.102', port = 5000, cors_allowed_origins="*");
+    socketio.run(app, host = '192.168.1.102', port = 5000);
