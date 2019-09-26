@@ -8,7 +8,7 @@ from query import query;
 
 app = Flask(__name__);
 app.secret_key = 'swj*2019!'; # secret key for using session
-cors = CORS(app, resources = {r"/*":{"origins":"*"}});
+#cors = CORS(app, resources = {r"/*":{"origins":"*"}});
 socketio = SocketIO(app, message_queue = 'amqp://guest:guest@localhost:5672');
 
 @app.route('/')
@@ -17,13 +17,22 @@ def index():
     return 'QASystem server works!';
 
 @app.route('/qasystem', methods = ['POST'])
-def query():
+def distributor():
     # if calling client has not been in a message room,
     # create one for the client. one client in one room.
+    question = request.args.get('query');
+    print(request.args)
     if 'uid' not in session:
         session['uid'] = str(uuid4());
-    task = query.delay(request.args.get('query'), session = session['uid']);
+    task = query.delay(question, session = session['uid']);
     return jsonify({'id': task.id});
+
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Access-Control-Allow-Headers, Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    return response
 
 @socketio.on('connect')
 def socket_connect():
