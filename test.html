@@ -31,8 +31,9 @@
 			$("#queryButton").click(function(e) {
 				$.ajax({
 					type: "POST",
+					dataType: "json",
 					url: "http://123.115.131.53:5000/qasystem",
-					params: JSON.stringify({'query': $("#question")}),
+					data: JSON.stringify({'query': $("#question")}),
 					success:function(data) {
 						// clear reply area
 						$("#reply").empty();

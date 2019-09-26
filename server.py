@@ -20,11 +20,11 @@ def index():
 def distributor():
     # if calling client has not been in a message room,
     # create one for the client. one client in one room.
-    question = request.args.get('query');
-    print(request.args)
+    inputs = request.json;
+    print(request.json)
     if 'uid' not in session:
         session['uid'] = str(uuid4());
-    task = query.delay(question, session = session['uid']);
+    task = query.delay(inputs['query'], session = session['uid']);
     return jsonify({'id': task.id});
 
 @app.after_request
