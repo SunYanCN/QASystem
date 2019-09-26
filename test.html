@@ -33,7 +33,7 @@
 					type: "POST",
 					contentType: "application/json; charset=UTF-8",
 					url: "http://123.115.131.53:5000/qasystem",
-					data: JSON.stringify({'query': $("#question")}),
+					data: JSON.stringify({'query': $("#question").val()}),
 					success:function(data) {
 						// clear reply area
 						$("#reply").empty();
