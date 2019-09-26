@@ -31,7 +31,7 @@
 			$("#queryButton").click(function(e) {
 				$.ajax({
 					type: "POST",
-					dataType: "json",
+					contentType: "application/json; charset=UTF-8",
 					url: "http://123.115.131.53:5000/qasystem",
 					data: JSON.stringify({'query': $("#question")}),
 					success:function(data) {
