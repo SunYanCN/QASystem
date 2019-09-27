@@ -19,7 +19,7 @@
 		</form>
 	        <script>
 			$(document).ready(function() {
-				var socket = io.connect('http://123.115.131.53:5000/query');
+				var socket = io('http://123.115.131.53:5000/query');
 				socket.on('connect',function() {
 					console.log('connected to server!');
 					// send join_room event right after connect socket
