@@ -1,26 +1,26 @@
 #!/usr/bin/python3
 
-from flask import jsonify;
 from flask_socketio import SocketIO;
 from celery import Celery;
+from gevent import monkey;
 import MySQLdb;
-from urllib3 import PoolManager;
 from QASystem import QASystem;
 
+monkey.patch_all();
 celery = Celery('worker', broker = 'amqp://guest:guest@localhost:5672');
 socketio = SocketIO(message_queue = "amqp://guest:guest@localhost:5672");
 qasystem = QASystem();
-http = PoolManager();
 
 @celery.task
 def query(question, session):
 
-    global qasystem;
-    room = session;
-    namespace = '/query';
+    assert type(question) is str;
+    assert type(session) is str;
     # get answers
     answer_score_list = qasystem.query(question,3);
     response = {'path': 'qasystem', 'query': question, 'answers': answer_score_list};
+    # send the retval value to message room which the client is in.
+    socketio.emit('msg', namespace = "/socket", room = session, data = response);
     # record user's question.
     sql = "insert into wd_cust_questions (id, question, status, time) values ( NULL, \'" + question + "\', 0, \'" + strftime("%Y-%m-%d %H:%M:%S", gmtime()) + "\')";
     try:
@@ -30,6 +30,4 @@ def query(question, session):
       db.commit();
       db.close();
     except: pass;
-    # send the retval value to message room which the client is in.
-    socketio.emit('msg', namespace, room, jsonify(response));
 

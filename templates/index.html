@@ -1,0 +1,56 @@
+<html>
+	<head>
+		<title>问答系统测试</title>
+		<meta charset="utf-8" />
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"></script>
+	</head>
+	<body>
+		<form method='post' id='queryForm'>
+			<table>
+				<tr>
+					<td>问题： <input type="text" id="question" /></td>
+					<td><button type="submit" id="queryButton">提问</button></td>
+				</tr>
+				<tr>
+					<div id="output"></div>
+				</tr>
+			</table>
+		</form>
+		<script>
+			$(document).ready(function() {
+				var socket = io('http://123.115.131.53:5000/socket');
+				socket.on('connect',function() {
+					console.log('connected to server!');
+					// send join_room event right after connect socket
+					socket.emit('listening');
+				});
+				socket.on('msg', function(data) {
+					response = data['answers'];
+					console.log('received message!');
+					for (var answer in response) {
+						if (data.hasOwnProperty(key)) {
+							var weight = data[key][0];
+							var question = data[key][1];
+							$("#output").prepend("<li> question: " + question + "; answer: " + answer + "; weight: " + weight + "</li>");
+						}
+					}
+				});
+			});
+			$("#queryButton").click(function(e) {
+				$.ajax({
+					type: "POST",
+					contentType: "application/json; charset=UTF-8",
+					url: "/qasystem",
+					data: JSON.stringify({"query": $("#question").val()}),
+					success: function(data) {
+						// clear output area for coming answers
+						$("#output").empty();
+					}
+				});
+				e.preventDefault();
+			});
+		</script>
+	</body>
+</html>
+
