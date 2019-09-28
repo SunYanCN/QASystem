@@ -6,29 +6,21 @@
         <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"></script>
     </head>
     <body>
-                <section>
-                        <h1>问答测试</h1>
-                        <p>
-                        <form method='post' id='queryForm'>
-                            <table>
-                                <tr>
-                                    <td>问题： <input type="text" id="question" /></td>
-                                    <td><button type="submit" id="queryButton">提问</button></td>
-                                </tr>
-                            </table>
-                            <table id="qa_output">
-                            </table>
-                        </form>
-                        </p>
-                        <h1>语料库测试</h1>
-                        <p>
-                            <form method='post' id='queryCorpus'>
-                                <button type="submit" id="queryCorpusButton">获得语料库</button>
-                                <table id="corpus_output">
-                                </table>
-                            </form>
-                        </p>
-                </section>
+        <section>
+            <h1>问答测试</h1>
+            <p>
+                <form method='post' id='queryForm'>
+                    <table>
+                        <tr>
+                            <td>问题： <input type="text" id="question" /></td>
+                            <td><button type="submit" id="queryButton">提问</button></td>
+                        </tr>
+                    </table>
+                    <table id="qa_output">
+                    </table>
+                </form>
+            </p>
+        </section>
         <script>
             $(document).ready(function() {
                 var socket = io('/socket');
@@ -56,20 +48,6 @@
                     success: function(data) {
                         // clear output area for coming answers
                         $("#qa_output").empty();
-                    }
-                });
-                e.preventDefault();
-            });
-            $("queryCorpusButton").click(function(e) {
-                $.get("/getcorpus", function(data) {
-                    var json = JSON.parse(data);
-                    $("#corpus_output").empty();
-                    for (var item in json) {
-                        var id = item[0];
-                        var corpus = item[1];
-                        var type = item[2];
-                        var dt = item[3];
-                        $("#corpus_output").prepend("<tr><td>" + id + "</td><td>" + corpus + "</td><td>" + type + "</td><td>" + dt + "</td></tr>"); 
                     }
                 });
                 e.preventDefault();
