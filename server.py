@@ -37,6 +37,8 @@ def socket_connect():
 @socketio.on('listening', namespace = '/socket')
 def on_listening():
     # client start to join the room and wait for reply.
+    if 'uid' not in session:
+        session['uid'] = str(uuid4());
     room = str(session['uid']);
     print("joining room " + room);
     join_room(room);
