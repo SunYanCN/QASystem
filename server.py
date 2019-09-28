@@ -47,7 +47,7 @@ def getCorpus():
     except:
         print("failed to get table wd_corpus_lib!");
         pass;
-    return render_template('database.html', query = retval);
+    return render_template('database.html', query = jsonify(retval));
 
 @socketio.on('connect', namespace = '/socket')
 def socket_connect():
