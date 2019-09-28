@@ -47,7 +47,7 @@ def getCorpus():
     except:
         print("failed to get table wd_corpus_lib!");
         pass;
-    return retval;
+    return jsonify(retval);
 
 @socketio.on('connect', namespace = '/socket')
 def socket_connect():
