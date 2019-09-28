@@ -55,8 +55,6 @@ killall celery
 # test the server
 
 ```bash
-firefox test.html
+firefox <ip>:5000
 ```
-
-![capture](pics/qasystem.png)
 
