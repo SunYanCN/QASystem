@@ -31,7 +31,7 @@
                 </section>
         <script>
             $(document).ready(function() {
-                var socket = io('http://123.115.131.53:5000/socket');
+                var socket = io('/socket');
                 socket.on('connect',function() {
                     console.log('connected to server!');
                     // send join_room event right after connect socket
