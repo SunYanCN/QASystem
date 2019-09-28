@@ -5,6 +5,7 @@ from flask_socketio import SocketIO, join_room;
 from flask_cors import CORS;
 from gevent import monkey;
 from uuid import uuid4;
+import MySQLdb;
 from query import query;
 
 monkey.patch_all();
@@ -29,6 +30,23 @@ def dispatcher():
     inputs = request.json;
     task = query.delay(inputs['query'], session['uid']);
     return jsonify({'id': session['uid']});
+
+@app.route('/getcorpus', methods = ['POST'])
+def getCorpus():
+    sql = "select * from wd_corpus_lib;";
+    retval = list();
+    try:
+        db = MySQLdb.connect(host = 'bd.shuiwujia.cn', user = 'root', passwd = 'swj2016', db = 'cust_service_robot', charset = 'utf8');
+        cur = db.cursor();
+        cur.execute(sql.encode('utf-8'));
+        for row in cur.fetchall():
+                retval.append((row[0],row[1],row[2],row[3]));
+        db.commit();
+        db.close();
+    except:
+        print("failed to get table wd_corpus_lib!");
+        pass;
+    return jsonify(retval);
 
 @socketio.on('connect', namespace = '/socket')
 def socket_connect():

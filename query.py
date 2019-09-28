@@ -23,7 +23,7 @@ def on_worker_init(**_):
     qasystem = QASystem();
     logger.info('model initialization completed!');
 
-@celery.task
+@celery.task(name = 'query.answers')
 def query(question, session):
 
     assert type(question) is str;
