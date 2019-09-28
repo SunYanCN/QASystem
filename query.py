@@ -3,6 +3,7 @@
 from flask_socketio import SocketIO;
 from celery import Celery;
 from celery.utils.log import get_task_logger;
+from celery.signals import worker_init, worker_process_init;
 from celery.concurrency import asynpool;
 from gevent import monkey;
 import MySQLdb;
@@ -13,7 +14,13 @@ asynpool.PROC_ALIVE_TIMEOUT = 100.0; # this is import for very long task.
 celery = Celery('worker', broker = 'amqp://guest:guest@localhost:5672');
 socketio = SocketIO(message_queue = "amqp://guest:guest@localhost:5672");
 logger = get_task_logger(__name__);
-qasystem = QASystem();
+qasystem = None;
+
+@worker_process_init.connect()
+def on_worker_init(**_):
+    global qasystem;
+    qasystem = QASystem();
+    logger.info('model initialization completed!');
 
 @celery.task
 def query(question, session):
@@ -25,6 +32,8 @@ def query(question, session):
     response = {'path': 'qasystem', 'query': question, 'answers': answer_score_list};
     # send the retval value to message room which the client is in.
     socketio.emit('msg', namespace = "/socket", room = session, data = response);
+    logger.info('query completed!');
+    return;
     # record user's question.
     sql = "insert into wd_cust_questions (id, question, status, time) values ( NULL, \'" + question + "\', 0, \'" + strftime("%Y-%m-%d %H:%M:%S", gmtime()) + "\')";
     try:
