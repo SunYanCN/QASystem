@@ -43,8 +43,8 @@ python3 Predictor.py
 
 run the QA system server by
 ```bash
-bash start_workers.sh
-python3 server.py
+CUDA_VISIBLE_DEVICES='' bash start_workers.sh
+CUDA_VISIBLE_DEVICES='' python3 server.py
 ```
 stop the server by Ctrl+C
 stop workers by
