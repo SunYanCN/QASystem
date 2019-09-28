@@ -2,13 +2,17 @@
 
 from flask_socketio import SocketIO;
 from celery import Celery;
+from celery.utils.log import get_task_logger;
+from celery.concurrency import asynpool;
 from gevent import monkey;
 import MySQLdb;
 from QASystem import QASystem;
 
 monkey.patch_all();
+asynpool.PROC_ALIVE_TIMEOUT = 100.0; # this is import for very long task.
 celery = Celery('worker', broker = 'amqp://guest:guest@localhost:5672');
 socketio = SocketIO(message_queue = "amqp://guest:guest@localhost:5672");
+logger = get_task_logger(__name__);
 qasystem = QASystem();
 
 @celery.task
