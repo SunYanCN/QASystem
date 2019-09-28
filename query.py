@@ -6,6 +6,7 @@ from celery.utils.log import get_task_logger;
 from celery.signals import worker_init, worker_process_init;
 from celery.concurrency import asynpool;
 from gevent import monkey;
+from time import gmtime, strftime;
 import MySQLdb;
 from QASystem import QASystem;
 
@@ -33,7 +34,6 @@ def query(question, session):
     # send the retval value to message room which the client is in.
     socketio.emit('msg', namespace = "/socket", room = session, data = response);
     logger.info('query completed!');
-    return;
     # record user's question.
     sql = "insert into wd_cust_questions (id, question, status, time) values ( NULL, \'" + question + "\', 0, \'" + strftime("%Y-%m-%d %H:%M:%S", gmtime()) + "\')";
     try:

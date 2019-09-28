@@ -12,9 +12,8 @@
 					<td>问题： <input type="text" id="question" /></td>
 					<td><button type="submit" id="queryButton">提问</button></td>
 				</tr>
-				<tr>
-					<div id="output"></div>
-				</tr>
+			</table>
+			<table id="output">
 			</table>
 		</form>
 		<script>
@@ -29,11 +28,9 @@
 					response = data['answers'];
 					console.log('received message!');
 					for (var answer in response) {
-						if (data.hasOwnProperty(answer)) {
-							var weight = data[key][0];
-							var question = data[key][1];
-							$("#output").prepend("<li> question: " + question + "; answer: " + answer + "; weight: " + weight + "</li>");
-						}
+						var weight = response[answer][0];
+						var question = response[answer][1];
+						$("#output").prepend("<tr><td>" + question + "</td><td>" + answer + "</td><td>" + weight + "</td></tr>");
 					}
 				});
 			});
