@@ -58,3 +58,4 @@ killall celery
 firefox <ip>:5000
 ```
 
+![web page](pics/capture.png)
