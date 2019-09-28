@@ -7,6 +7,7 @@ from gevent import monkey;
 from uuid import uuid4;
 import MySQLdb;
 from query import query;
+from config import *;
 
 monkey.patch_all();
 app = Flask(__name__);
@@ -36,7 +37,7 @@ def getCorpus():
     sql = "select * from wd_corpus_lib;";
     retval = list();
     try:
-        db = MySQLdb.connect(host = 'bd.shuiwujia.cn', user = 'root', passwd = 'swj2016', db = 'cust_service_robot', charset = 'utf8');
+        db = MySQLdb.connect(host = db_host, user = db_usr, passwd = db_psw, db = db_name, charset = 'utf8');
         cur = db.cursor();
         cur.execute(sql.encode('utf-8'));
         for row in cur.fetchall():

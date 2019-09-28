@@ -9,6 +9,7 @@ from gevent import monkey;
 from time import gmtime, strftime;
 import MySQLdb;
 from QASystem import QASystem;
+from config import *;
 
 monkey.patch_all();
 asynpool.PROC_ALIVE_TIMEOUT = 100.0; # this is import for very long task.
@@ -37,7 +38,7 @@ def query(question, session):
     # record user's question.
     sql = "insert into wd_cust_questions (id, question, status, time) values ( NULL, \'" + question + "\', 0, \'" + strftime("%Y-%m-%d %H:%M:%S", gmtime()) + "\')";
     try:
-      db = MySQLdb.connect(host = 'bd.shuiwujia.cn', user = 'root', passwd = 'swj2016', db = 'cust_service_robot', charset='utf8');
+      db = MySQLdb.connect(host = db_host, user = db_usr, passwd = db_psw, db = db_name, charset='utf8');
       cur = db.cursor();
       cur.execute(sql.encode('utf-8'));
       db.commit();
