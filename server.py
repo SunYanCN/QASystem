@@ -32,7 +32,7 @@ def dispatcher():
     task = query.delay(inputs['query'], session['uid']);
     return jsonify({'id': session['uid']});
 
-@app.route('/getcorpus', methods = ['POST'])
+@app.route('/getcorpus')
 def getCorpus():
     sql = "select * from wd_corpus_lib;";
     retval = list();
