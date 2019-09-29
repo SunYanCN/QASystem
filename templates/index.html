@@ -101,8 +101,40 @@
                         }
                     } // on success method
                 }); // end ajax
-		e.preventDefault();
+                e.preventDefault();
             }); // end click method
+            $("#addCorpusButtton").click(function(e) {
+                if (isNaN($("#corpus_id").val())) {
+                    alert("corpus id must be given!");
+                    return;
+                }
+                if (!$("#corpus").val() || $("#corpus").val().length == 0) {
+                    alert("corpus must ben given!");
+                    return;
+                }
+                if (isNaN($("#corpus_type").val())) {
+                    alert("corpus type must be given!");
+                    return;
+                }
+                if (new Date($("#corpus_date").val()) === "Invalid Date" || isNaN(new Date($("#corpus_date").val()))) {
+                    alert("corpus date is invalid!");
+                    return;
+                }
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json; charset=UTF-8",
+                    url: "/corpus",
+                    data: JSON.stringigy({"mode": "add", "data": [$("#corpus").val(), Number($("#corpus_type").val()), $("#corpus_date").val()]}),
+                    success: function(data) {
+                        if (data["status"] == "success") {
+                            alert("added successfully!");
+                        } else {
+                            alert("failed!");
+                        }
+                    }
+                });
+                e.preventDefault();
+            });
         </script>
     </body>
 </html>
