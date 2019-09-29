@@ -231,6 +231,8 @@
                     success: function(data) {
                         $("#knowledge_output").empty();
                         if (data["status"] == "failure") {
+                            $("#knowledge_output").append("failed to get data from wd_qa_knowledge!");
+                        } else {
                             $("#knowledge_output").append("<tr><th>id</th><th>question</th><th>answer</th><th>type</th><th>expiry date</th></tr>");
                             for(var key in data["retval"]) {
                                 d = data["retval"][key];
