@@ -104,10 +104,6 @@
                 e.preventDefault();
             }); // end click method
             $("#addCorpusButtton").click(function(e) {
-                if (isNaN($("#corpus_id").val())) {
-                    alert("corpus id must be given!");
-                    return;
-                }
                 if (!$("#corpus").val() || $("#corpus").val().length == 0) {
                     alert("corpus must ben given!");
                     return;
@@ -126,6 +122,7 @@
                     url: "/corpus",
                     data: JSON.stringify({"mode": "add", "data": [$("#corpus").val(), Number($("#corpus_type").val()), $("#corpus_date").val()]}),
                     success: function(data) {
+                        $("#corpus_output").empty();
                         if (data["status"] == "success") {
                             alert("added successfully!");
                         } else {
@@ -146,10 +143,44 @@
                     url: "/corpus",
                     data: JSON.stringify({"mode": "delete", "data": Number($("#corpus_id").val())}),
                     success: function(data) {
+                        $("#corpus_output").empty();
                         if (data["status"] == "success") {
                             alert("deleted successfully!");
                         } else {
                             alert("failed to delete!");
+                        }
+                    }
+                });
+                e.preventDefault();
+            });
+            $("#updateCorpusButton").click(function(e) {
+                if (isNaN($("#corpus_id").val())) {
+                    alert("corpus id must be given!");
+                    return;
+                }
+                if (!$("#corpus").val() || $("#corpus").val().length == 0) {
+                    alert("corpus must ben given!");
+                    return;
+                }
+                if (isNaN($("#corpus_type").val())) {
+                    alert("corpus type must be given!");
+                    return;
+                }
+                if (new Date($("#corpus_date").val()) === "Invalid Date" || isNaN(new Date($("#corpus_date").val()))) {
+                    alert("corpus date is invalid!");
+                    return;
+                }
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json; charset=UTF-8",
+                    url: "/corpus",
+                    data: JSON.stringify({"mode": "update", "data": [Number($("#corpus_id").val()), $("#corpus").val(), Number($("#corpus_type").val()), $("#corpus_date").val()]}),
+                    success: function(data) {
+                        $("#corpus_output").empty();
+                        if (data["status"] == "success") {
+                            alert("updated successfully!");
+                        } else {
+                            alert("failed to update!");
                         }
                     }
                 });
