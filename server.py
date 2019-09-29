@@ -99,6 +99,73 @@ def corpus():
         print("invalid mode for corpus method!");
     return jsonify({"status": status, "retval": retval});
 
+@app.route('/knowledge', methods = ['POST'])
+def knowledge():
+    params = request.json;
+    status = "success";
+    retval = list();
+    if "mode" no in params or params["mode"] == "get":
+        sql = "select * from wd_qa_knowledge";
+        try:
+            db = MySQLdb.connect(host = db_host, user = db_usr, passwd = db_psw, db = db_name, charset = 'utf8');
+            cur = db.cursor();
+            cur.execute(sql.encode('utf-8'));
+            for row in cur.fetchall():
+                retval.append((row[0], row[1], row[2], row[3], row[4]));
+            db.commit();
+            db.close();
+        except:
+            print("failed to get table wd_qa_knowledge!");
+    elif params["mode"] == "add":
+        assert "data" in params;
+        data = params["data"];
+        assert type(data) is list;
+        sql = "insert into wd_qa_knowledge values (null, '" + data[0] + "', '" + data[1] + "', " + str(data[2]) + ", '" + data[3] + "')";
+        try:
+            db = MySQLdb.connect(host = db_host, user = db_usr, passwd = db_psw, db = db_name, charset = "utf8");
+            cur = db.cursor();
+            cur.execute(sql.encode('utf-8'));
+            db.commit();
+            if cursor.rowcount == 1: status = "success";
+            else: status = "failure";
+            db.close();
+        except:
+            print("failed to add data to table wd_qa_knowledge!");
+    elif params["mode"] == "delete":
+        assert "data" in params;
+        data = params["data"];
+        assert type(data) is int;
+        sql = "delete from wd_qa_knowledge where id = " + str(data);
+        try:
+            db = MySQLdb.connect(host = db_host, user = db_usr, passwd = db_psw, db = db_name, charset = "utf8");
+            cur = db.cursor();
+            cur.execute(sql.encode("utf-8"));
+            db.commit();
+            if cursor.rowcount == 1: status = "success";
+            else: status = "failure";
+            db.close();
+        except:
+            print("failed to delete data from table wd_qa_knowledge!");
+    elif params["mode"] == "update":
+        assert "data" in params;
+        data = params["data"];
+        assert type(data) is list;
+        sql = "update wd_qa_knowledge set question = '" + data[1] + "', answer = '" + data[2] + "', type = " + str(data[3]) + ", expiry_date = '" + data[4] + "' where id = " + str(data[0]);
+        try:
+            db = MySQLdb.connect(host = db_host, user = db_usr, passwd = db_psw, db = db_name, charset = "utf8");
+            cur = db.cursor();
+            cur.execute(sql.encode("utf-8"));
+            db.commit();
+            if cursor.rowcount == 1: status = "success";
+            else: status = "failure";
+            db.close();
+        except:
+            print("failed to update data in table wd_qa_knowledge!");
+    else:
+        status = "failure";
+        print("invalid mode for qa knowledge method!");
+    return jsonify({"status": status, "retval": retval});
+
 @socketio.on('connect', namespace = '/socket')
 def socket_connect():
     print('connected to client!');
