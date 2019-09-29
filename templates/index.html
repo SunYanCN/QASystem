@@ -20,6 +20,7 @@
                     </table>
                 </form>
             </p>
+	    <h1>语料库测试</h1>
             <p>
                 <form method='post' id='corpus'>
                     <table>
@@ -86,7 +87,9 @@
                         } else {
                             // list output into a table
                             $("#corpus_output").append("<table>");
-                            for(var d in data["retval"]) {
+                            $("#corpus_output").append("<tr><th>id</th><th>corpus</th><th>type</th><th>date</th></tr>");
+                            for(var key in data["retval"]) {
+                                d = data["retval"][key];
                                 $("#corpus_output").append("<tr>");
                                 $("#corpus_output").append("<td>" + d[0] + "</td>");
                                 $("#corpus_output").append("<td>" + d[1] + "</td>");
