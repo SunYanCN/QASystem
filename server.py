@@ -104,7 +104,7 @@ def knowledge():
     params = request.json;
     status = "success";
     retval = list();
-    if "mode" no in params or params["mode"] == "get":
+    if "mode" not in params or params["mode"] == "get":
         sql = "select * from wd_qa_knowledge";
         try:
             db = MySQLdb.connect(host = db_host, user = db_usr, passwd = db_psw, db = db_name, charset = 'utf8');
