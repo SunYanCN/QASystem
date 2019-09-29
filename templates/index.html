@@ -264,6 +264,64 @@
                 });
                 e.preventDefault();
             });
+            $("#deleteKnowledgeButton").click(function(e) {
+                if (isNaN($("#knowledge_id").val())) {
+                    alert("knowledge id must be given!");
+                    return;
+                }
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json; charset=UTF-8",
+                    url: "/knowledge",
+                    data: JSON.stringify({"mode": "delete", "data": Number($("#knowledge_id").val())}),
+                    success: function(data) {
+                        $("#knowledge_output").empty();
+                        if (data["status"] == "success") {
+                            alert("deleted successfully!");
+                        } else {
+                            alert("failed to delete!");
+                        }
+                    }
+                });
+                e.preventDefault();
+            });
+            $("#updateKnowledgeButton").click(function(e) {
+                if (isNaN($("#knowledge_id").val())) {
+                    alert("knowledge id must be given!");
+                    return;
+                }
+                if (!$("#knowledge_question").val() || $("#knowledge_question").val().length == 0) {
+                    alert("question must be given!");
+                    return;
+                }
+                if (!$("#knowledge_answer").val() || $("#knowledge_answer").val().length == 0) {
+                    alert("answer must be given!");
+                    return;
+                }
+                if (isNaN($("#knowledge_type").val())) {
+                    alert("type must be given!");
+                    return;
+                }
+                if (new Date($("#knowledge_date").val()) == "Invalid Date" || isNaN(new Date($("#knowledge_date").val()))) {
+                    alert("date must be given!");
+                    return;
+                }
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json; charset=UTF-8",
+                    url: "/knowledge",
+                    data: JSON.stringify({"mode": "update", "data": [Number($("#knowledge_id").val()), $("#knowledge_question").val(), $("#knowledge_answer").val(), Number($("#knowledge_type").val()), $("#knowledge_date").val()]}),
+                    success: function(data) {
+                        $("#knowledge_output").empty();
+                        if (data["status"] == "success") {
+                            alert("updated successfully!");
+                        } else {
+                            alert("failed to update!");
+                        }
+                    }
+                });
+                e.preventDefault();
+            });
         </script>
     </body>
 </html>
