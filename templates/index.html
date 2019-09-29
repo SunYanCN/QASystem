@@ -63,6 +63,22 @@
                     </table>
                 </form>
             </p>
+            <h1>用户问题测试</h1>
+            <p>
+                <form method='post' id='knowledge'>
+                    <button type="submit" id="showQuestions">show</button><br>
+                    <table id="questions_output">
+                    </table>
+                </form>
+            </p>
+            <h1>聊天历史测试</h1>
+            <p>
+                <form method='post' id='chat'>
+                    <button type="submit" id="showHistory">show</button><br>
+                    <table id="history_output">
+                    </table>
+                </form>
+            </p>
         </section>
         <script>
             $(document).ready(function() {
@@ -317,6 +333,47 @@
                             alert("updated successfully!");
                         } else {
                             alert("failed to update!");
+                        }
+                    }
+                });
+                e.preventDefault();
+            });
+            $("#showQuestions").click(function(e) {
+                $.ajax({
+                    type: "GET",
+                    url: "/cust_questions",
+                    success: function(data) {
+                        $("#questions_output").empty();
+                        $("#questions_output").append("<tr><th>id</th><th>question</th><th>status</th><th>date</th></tr>");
+                        for(var key in data) {
+                            d = data[key];
+                            $("#questions_output").append("<tr>");
+                            $("#questions_output").append("<td>" + d[0] + "</td>");
+                            $("#questions_output").append("<td>" + d[1] + "</td>");
+                            $("#questions_output").append("<td>" + d[2] + "</td>");
+                            $("#questions_output").append("<td>" + d[3] + "</td>");
+                            $("#questions_output").append("</tr>");
+                        }
+                    }
+                });
+                e.preventDefault();
+            });
+            $("#showHistory").click(function(e) {
+                $.ajax({
+                    type: "GET",
+                    url: "/chat_history",
+                    success: function(data) {
+                        $("#history_output").empty();
+                        $("#history_output").append("<tr><th>id</th><th>time</th><th>question</th><th>answer</th><th>user id</th></tr>");
+                        for (var key in data) {
+                            d = data[key];
+                            $("#history_output").append("<tr>");
+                            $("#history_output").append("<td>" + d[0] + "</td>");
+                            $("#history_output").append("<td>" + d[1] + "</td>");
+                            $("#history_output").append("<td>" + d[2] + "</td>");
+                            $("#history_output").append("<td>" + d[3] + "</td>");
+                            $("#history_output").append("<td>" + d[4] + "</td>");
+                            $("#history_output").append("</tr>");
                         }
                     }
                 });
