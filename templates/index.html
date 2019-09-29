@@ -59,6 +59,8 @@
                             <td><button type="submit" id="updateKnowledgeButton">update</button></td>
                         </tr>
                     </table>
+                    <table id="knowledge_output">
+                    </table>
                 </form>
             </p>
         </section>
@@ -106,7 +108,6 @@
                             $("#corpus_output").append("failed to get data from wd_corpus_lib");
                         } else {
                             // list output into a table
-                            $("#corpus_output").append("<table>");
                             $("#corpus_output").append("<tr><th>id</th><th>corpus</th><th>type</th><th>date</th></tr>");
                             for(var key in data["retval"]) {
                                 d = data["retval"][key];
@@ -117,7 +118,6 @@
                                 $("#corpus_output").append("<td>" + d[3] + "</td>");
                                 $("#corpus_output").append("</tr>");
                             }
-                            $("#corpus_output").append("</table>");
                         }
                     } // on success method
                 }); // end ajax
@@ -125,7 +125,7 @@
             }); // end click method
             $("#addCorpusButtton").click(function(e) {
                 if (!$("#corpus").val() || $("#corpus").val().length == 0) {
-                    alert("corpus must ben given!");
+                    alert("corpus must be given!");
                     return;
                 }
                 if (isNaN($("#corpus_type").val())) {
@@ -201,6 +201,64 @@
                             alert("updated successfully!");
                         } else {
                             alert("failed to update!");
+                        }
+                    }
+                });
+                e.preventDefault();
+            });
+            $("#getKnowledgeButtton").click(function(e) {
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json; charset=UTF-8",
+                    url: "/knowledge",
+                    data: JSON.stringify({"mode": "get", "data": []}),
+                    success: function(data) {
+                        $("#knowledge_output").empty();
+                        if (data["status"] == "failure") {
+                            $("#knowledge_output").append("<tr><th>id</th><th>question</th><th>answer</th><th>type</th><th>expiry date</th></tr>");
+                            for(var key in data["retval"]) {
+                                d = data["retval"][key];
+                                $("#knowledge_output").append("<tr>");
+                                $("#knowledge_output").append("<td>" + d[0] + "</td>");
+                                $("#knowledge_output").append("<td>" + d[1] + "</td>");
+                                $("#knowledge_output").append("<td>" + d[2] + "</td>");
+                                $("#knowledge_output").append("<td>" + d[3] + "</td>");
+                                $("#knowledge_output").append("<td>" + d[4] + "</td>");
+                                $("#knowledge_output").append("</tr>");
+                            }
+                        }
+                    }
+                });
+                e.preventDefault();
+            });
+            $("#addKnowledgeButtton").click(function(e) {
+                if (!$("#knowledge_question").val() || $("#knowledge_question").val().length == 0) {
+                    alert("question must be given!");
+                    return;
+                }
+                if (!$("#knowledge_answer").val() || $("#knowledge_answer").val().length == 0) {
+                    alert("answer must be given!");
+                    return;
+                }
+                if (isNaN($("#knowledge_type").val())) {
+                    alert("type must be given!");
+                    return;
+                }
+                if (new Date($("#knowledge_date").val()) == "Invalid Date" || isNaN(new Date($("#knowledge_date").val()))) {
+                    alert("date must be given!");
+                    return;
+                }
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json; charset=UTF-8",
+                    url: "/knowledge",
+                    data: JSON.stringify({"mode": "add", "data": [$("#knowledge_question").val(), $("#knowledge_answer").val(), Number($("#knowledge_type").val()), $("#knowledge_date").val()]}),
+                    success: function(data) {
+                        $("#knowledge_output").empty();
+                        if (data["status"] == "success") {
+                            alert("added successfully!");
+                        } else {
+                            alert("failed to add!");
                         }
                     }
                 });
