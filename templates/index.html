@@ -124,12 +124,32 @@
                     type: "POST",
                     contentType: "application/json; charset=UTF-8",
                     url: "/corpus",
-                    data: JSON.stringigy({"mode": "add", "data": [$("#corpus").val(), Number($("#corpus_type").val()), $("#corpus_date").val()]}),
+                    data: JSON.stringify({"mode": "add", "data": [$("#corpus").val(), Number($("#corpus_type").val()), $("#corpus_date").val()]}),
                     success: function(data) {
                         if (data["status"] == "success") {
                             alert("added successfully!");
                         } else {
-                            alert("failed!");
+                            alert("failed to add!");
+                        }
+                    }
+                });
+                e.preventDefault();
+            }); // end add method
+            $("#deleteCorpusButton").click(function(e) {
+                if (isNaN($("#corpus_id").val())) {
+                    alert("corpus id must be given!");
+                    return;
+                }
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json; charset=UTF-8",
+                    url: "/corpus",
+                    data: JSON.stringify({"mode": "delete", "data": Number($("#corpus_id").val())}),
+                    success: function(data) {
+                        if (data["status"] == "success") {
+                            alert("deleted successfully!");
+                        } else {
+                            alert("failed to delete!");
                         }
                     }
                 });
