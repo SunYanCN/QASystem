@@ -20,7 +20,7 @@
                     </table>
                 </form>
             </p>
-	    <h1>语料库测试</h1>
+            <h1>语料库测试</h1>
             <p>
                 <form method='post' id='corpus'>
                     <table>
@@ -38,6 +38,26 @@
                         </tr>
                     </table>
                     <table id="corpus_output">
+                    </table>
+                </form>
+            </p>
+            <h1>问答知识库测试</h1>
+            <p>
+                <form method='post' id='knowledge'>
+                    <table>
+                        <tr>
+                            <td>id: <input type="text" id="knowledge_id" /></td>
+                            <td>question: <input type="text" id="knowledge_question" /></td>
+                            <td>answer: <input type="text" id="knowledge_answer" /></td>
+                            <td>type: <input type="text" id="knowledge_type" /></td>
+                            <td>expire date: <input type="text" id="knowledge_date" /></td>
+                        </tr>
+                        <tr>
+                            <td><button type="submit" id="getKnowledgeButtton">get</button></td>
+                            <td><button type="submit" id="addKnowledgeButtton">add</button></td>
+                            <td><button type="submit" id="deleteKnowledgeButton">remove</button></td>
+                            <td><button type="submit" id="updateKnowledgeButton">update</button></td>
+                        </tr>
                     </table>
                 </form>
             </p>
