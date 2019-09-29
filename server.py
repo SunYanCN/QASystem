@@ -37,7 +37,7 @@ def corpus():
     params = request.json;
     status = "success";
     retval = list();
-    if "mode" is not in params or params["mode"] == "get":
+    if "mode" not in params or params["mode"] == "get":
         sql = "select * from wd_corpus_lib;";
         try:
             db = MySQLdb.connect(host = db_host, user = db_usr, passwd = db_psw, db = db_name, charset = 'utf8');
