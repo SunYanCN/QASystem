@@ -166,6 +166,38 @@ def knowledge():
         print("invalid mode for qa knowledge method!");
     return jsonify({"status": status, "retval": retval});
 
+@app.route('/cust_questions')
+def questions():
+    retval = list();
+    sql = "select * from wd_cust_questions";
+    try:
+        db = MySQLdb.connect(host = db_host, user = db_usr, passwd = db_psw, db = db_name, charset = 'utf8');
+        cur = db.cursor();
+        cur.execute(sql.encode('utf-8'));
+        for row in cur.fetchall():
+            retval.append((row[0], row[1], row[2], row[3]));
+        db.commit();
+        db.close();
+    except:
+        print("failed to get table wd_cust_questions!");
+    return jsonify(retval);
+
+@app.route('/chat_history')
+def history():
+    retval = list();
+    sql = "select * from wd_robot_chat_history";
+    try:
+        db = MySQLdb.connect(host = db_host, user = db_usr, passwd = db_psw, db = db_name, charset = 'utf8');
+        cur = db.cursor();
+        cur.execute(sql.encode('utf-8'));
+        for row in cur.fetchall():
+            retval.append((row[0], row[1], row[2], row[3], row[4]));
+        db.commit();
+        db.close();
+    except:
+        print("failed to get table wd_robot_chat_history!");
+    return jsonify(retval);
+
 @socketio.on('connect', namespace = '/socket')
 def socket_connect():
     print('connected to client!');
