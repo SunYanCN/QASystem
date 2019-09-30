@@ -45,3 +45,39 @@ def query(question, session):
       db.close();
     except: pass;
 
+@celery.task(name = 'query.update_bert')
+def update_bert(session):
+
+    assert type(session) is str;
+    # download qa database from database.
+    try:
+        db = MySQLdb.connect(host = 'bd.shuiwujia.cn', user = 'root', passwd = 'swj2016', db = 'cust_service_robot', charset='utf8');
+        sql = "select question,answer from wd_qa_knowledge";
+        cur = db.cursor();
+        cur.execute(sql.encode('utf-8'));
+        qa = str();
+        for row in cur.fetchall():
+            qa += row[0] + "\t" + row[1] + "\n";
+        with open("question_answer.txt","wb") as f:
+            f.write(qa.encode('utf-8'));
+        db.commit();
+        db.close();
+    except Exception as e:
+        logger.info(e);
+        response = jsonify({'status':'failure'});
+        socketio.emit('msg', namespace = '/socket', room = session, data = response);
+    # generate dataset.
+    try:
+        from subprocess import call;
+        call(["./create_dataset","-i","question_answer.txt","-o","dataset"]);
+    except Exception as e:
+        logger.info(e);
+        response = jsonify({'status':'failure'});
+        socketio.emit('msg', namespace = '/socket', room = session, data = response);
+    # finetune model
+    logger.info('training...');
+    predictor = Predictor();
+    predictor.finetune('dataset');
+    response = jsonify({"status": "success"});
+    socketio.emit('msg', namespace = '/socket', room = session, data = response);
+
