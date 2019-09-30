@@ -69,6 +69,7 @@ def update_bert(session):
         logger.info(e);
         response = jsonify({'status':'failure'});
         socketio.emit('msg', namespace = '/socket', room = session, data = response);
+        return;
     # generate dataset.
     try:
         logger.info('generating training set...');
@@ -78,6 +79,7 @@ def update_bert(session):
         logger.info(e);
         response = jsonify({'status':'failure'});
         socketio.emit('msg', namespace = '/socket', room = session, data = response);
+        return;
     # finetune model
     logger.info('training...');
     from Predictor import Predictor;
