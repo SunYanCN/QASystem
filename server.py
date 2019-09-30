@@ -51,6 +51,8 @@ def restart():
     import os;
     os.system("bash stop_workers.sh");
     os.system("CUDA_VISIBLE_DEVICES='' bash start_workers.sh");
+    # change url to some address meaningful
+    return redirect("/", code = 302);
 
 @app.route('/corpus', methods = ['POST'])
 def corpus():
