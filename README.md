@@ -49,7 +49,7 @@ CUDA_VISIBLE_DEVICES='' python3 server.py
 stop the server by Ctrl+C
 stop workers by
 ```bash
-killall celery
+bash stop_workers.sh
 ```
 
 # test the server
