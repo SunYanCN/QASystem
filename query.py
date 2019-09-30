@@ -80,6 +80,7 @@ def update_bert(session):
         socketio.emit('msg', namespace = '/socket', room = session, data = response);
     # finetune model
     logger.info('training...');
+    from Predictor import Predictor;
     predictor = Predictor();
     predictor.finetune('dataset');
     response = jsonify({"status": "success"});
