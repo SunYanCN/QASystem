@@ -234,5 +234,12 @@ def on_listening():
     join_room(room);
 
 if __name__ == "__main__":
-
+    
+    import os;
+    import signal;
+    os.system("CUDA_VISIBLE_DEVICES='' bash start_workers.sh");
+    def stop_workers(sig, frame):
+        os.system("bash stop_workers.sh");
+        exit(0);
+    signal.signal(signal.SIGINT, stop_workers);
     socketio.run(app, host = '192.168.1.102', port = 5000);
