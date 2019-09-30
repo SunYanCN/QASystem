@@ -45,7 +45,7 @@ def query(question, session):
         db.commit();
         db.close();
     except Exception as e:
-        logger.info(e);
+        logger.error(e);
 
 @celery.task(name = 'query.update_bert')
 def update_bert(session):
@@ -66,7 +66,7 @@ def update_bert(session):
         db.commit();
         db.close();
     except Exception as e:
-        logger.info(e);
+        logger.error(e);
         response = jsonify({'status':'failure'});
         socketio.emit('msg', namespace = '/socket', room = session, data = response);
         return;
@@ -76,7 +76,7 @@ def update_bert(session):
         from subprocess import call;
         call(["./create_dataset","-i","question_answer.txt","-o","dataset"]);
     except Exception as e:
-        logger.info(e);
+        logger.error(e);
         response = jsonify({'status':'failure'});
         socketio.emit('msg', namespace = '/socket', room = session, data = response);
         return;
@@ -86,5 +86,31 @@ def update_bert(session):
     predictor = Predictor();
     predictor.finetune('dataset');
     response = jsonify({"status": "success"});
+    socketio.emit('msg', namespace = '/socket', room = session, data = response);
+
+@celery.task(name = 'query.update_corpus')
+def update_corpus(session):
+
+    assert type(session) is str;
+    # download corpus database from mysql.
+    try:
+        logger.info('get the latest corpus from wd_corpus_lib...');
+        db = MySQLdb.connect(host = db_host, user = db_usr, passwd = db_psw, db = db_name, charset='utf8');
+        sql = "select corpus from wd_corpus_lib where type = 1";
+        cur = db.cursor();
+        cur.execute(sql.encode('utf-8'));
+        corpus = str();
+        for row in cur.fetchall():
+            corpus += row[0] + "\n";
+        with open("cppjieba/dict/stop_words.utf8","wb") as f:
+            f.write(corpus.encode("utf-8"));
+        db.commit();
+        db.close();
+    except Exception as e:
+        logger.error(e);
+        response = jsonify({"status":"failure"});
+        socketio.emit('msg', namespace = '/socket', room = session, data = response);
+        return;
+    response = jsonify({"status":"success"});
     socketio.emit('msg', namespace = '/socket', room = session, data = response);
 

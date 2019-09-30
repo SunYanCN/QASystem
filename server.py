@@ -6,7 +6,7 @@ from flask_cors import CORS;
 from gevent import monkey;
 from uuid import uuid4;
 import MySQLdb;
-from query import query, update_bert;
+from query import query, update_bert, update_corpus;
 from config import *;
 
 monkey.patch_all();
@@ -32,11 +32,18 @@ def dispatcher():
     task = query.delay(inputs['query'], session['uid']);
     return jsonify({'id': session['uid']});
 
-@app.route('/update')
-def update():
+@app.route('/update_bert')
+def update_model():
     if 'uid' not in session:
         session['uid'] = str(uuid4());
     task = update_bert.delay(session['uid']);
+    return jsonify({'id': session['uid']});
+
+@app.route('/update_corpus')
+def update_jieba():
+    if 'uid' not in session:
+        session['uid'] = str(uuid4());
+    task = update_corpus.delay(session['uid']);
     return jsonify({'id': session['uid']});
 
 @app.route('/corpus', methods = ['POST'])
