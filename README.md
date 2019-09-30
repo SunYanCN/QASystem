@@ -28,8 +28,8 @@ bash downloads.sh
 put the questions and answers in format as question_answer.txt's. and execute following command to convert the collected samples into dataset format.
 
 ```bash
-make && make install
-./create_dataset -i question_answer.txt -o dataset
+make -C cc && make -C cc install
+./cc/create_dataset -i question_answer.txt -o dataset
 ```
 
 # finetune bert classifer to predict relavance between question and answer correctly
