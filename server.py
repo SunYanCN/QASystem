@@ -46,6 +46,12 @@ def update_jieba():
     task = update_corpus.delay(session['uid']);
     return jsonify({'id': session['uid']});
 
+@app.route("/restart")
+def restart():
+    import os;
+    os.system("bash stop_workers.sh");
+    os.system("CUDA_VISIBLE_DEVICES='' bash start_workers.sh");
+
 @app.route('/corpus', methods = ['POST'])
 def corpus():
     params = request.json;
