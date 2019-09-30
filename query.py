@@ -102,7 +102,7 @@ def update_corpus(session):
         corpus = str();
         for row in cur.fetchall():
             corpus += row[0] + "\n";
-        with open("cppjieba/dict/stop_words.utf8","wb") as f:
+        with open("cc/cppjieba/dict/stop_words.utf8","wb") as f:
             f.write(corpus.encode("utf-8"));
         db.commit();
         db.close();
