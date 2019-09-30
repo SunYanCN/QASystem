@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from flask import Flask, request, render_template, jsonify, session;
+from flask import Flask, request, render_template, jsonify, session, redirect;
 from flask_socketio import SocketIO, join_room;
 from flask_cors import CORS;
 from gevent import monkey;
