@@ -13,7 +13,11 @@ monkey.patch_all();
 app = Flask(__name__);
 app.secret_key = 'swj*2019!'; # secret key for using sessiona
 cors = CORS(app, resources = {r"/*":{"origins":"*"}});
-socketio = SocketIO(app, message_queue = 'amqp://guest:guest@localhost:5672');
+socketio = SocketIO(app, cors_allowed_origins="*", message_queue = 'amqp://guest:guest@localhost:5672');
+
+@app.route('/static/<path:path>')
+def send_static(path):
+    return send_from_directory('static', path);
 
 @app.route('/')
 def index():
@@ -142,7 +146,7 @@ def knowledge():
         assert "data" in params;
         data = params["data"];
         assert type(data) is list;
-        sql = "insert into wd_qa_knowledge values (null, '" + data[0] + "', '" + data[1] + "', " + str(data[2]) + ", '" + data[3] + "')";
+        sql = "insert into wd_qa_knowledge (id, question, answer, type, expiry_date) values (null, '" + data[0] + "', '" + data[1] + "', " + str(data[2]) + ", '" + data[3] + "')";
         try:
             db = MySQLdb.connect(host = db_host, user = db_usr, passwd = db_psw, db = db_name, charset = "utf8");
             cur = db.cursor();
@@ -242,4 +246,4 @@ if __name__ == "__main__":
         os.system("bash stop_workers.sh");
         exit(0);
     signal.signal(signal.SIGINT, stop_workers);
-    socketio.run(app, host = '192.168.1.102', port = 5000);
+    socketio.run(app, host = '172.17.0.2', port = 5000);

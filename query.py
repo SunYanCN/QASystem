@@ -36,7 +36,7 @@ def query(question, session):
     socketio.emit('msg', namespace = "/socket", room = session, data = response);
     logger.info('query completed!');
     # record user's question.
-    sql = "insert into wd_cust_questions (id, question, status, time) values ( NULL, \'" + question + "\', 0, \'" + strftime("%Y-%m-%d %H:%M:%S", gmtime()) + "\')";
+    sql = "insert into wd_cust_questions (id, question, status, date) values ( NULL, \'" + question + "\', 0, \'" + strftime("%Y-%m-%d %H:%M:%S", gmtime()) + "\')";
     try:
         logger.info('appending question into table wd_cust_question...');
         db = MySQLdb.connect(host = db_host, user = db_usr, passwd = db_psw, db = db_name, charset='utf8');
