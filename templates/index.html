@@ -1,57 +1,387 @@
-<!DOCTYPE html><html><head><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0"><meta content="telephone=no" name=format-detection><meta content="telephone=no,email=no,adress=no" name=format-detection><meta name=x5-orientation content=portrait><meta name=x5-fullscreen content=true><meta name=x5-page-mode content=app><meta http-equiv=Access-Control-Allow-Origin content=*><meta http-equiv=Expires content=0><meta http-equiv=Pragma content=no-cache><meta http-equiv=Cache-control content=no-cache><meta http-equiv=Cache content=no-cache><meta charset=utf-8><title>水务加</title><link rel=stylesheet type=text/css href=./static/css/reset.css><link rel=stylesheet type=text/css href=./static/css/iconfont.css><link rel="shortcut icon" type=image/x-icon href=http://page.water-it.cn:88/favicon.ico><script src=https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js></script><script type=text/javascript>var fontSize = 100;
-        function goPAGE() {
-            if ((navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i))) {
-                /*window.location.href="你的手机版地址";*/
-                fontSize=100
-            }
-            else {
-                /*window.location.href="你的电脑版地址";    */
-                fontSize=55
-            }
-        }
-        goPAGE();
-        (function (doc, win) {
-            var docEl = doc.documentElement,
-                resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
-                recalc = function () {
-                    var clientWidth = docEl.clientWidth;
-                    if (!clientWidth) return;
-                    if(clientWidth>=750){
-                        docEl.style.fontSize = fontSize+'px';
-                    }else{
-                        docEl.style.fontSize = 100 * (clientWidth / 750) + 'px';
+<html>
+    <head>
+        <title>问答系统测试</title>
+        <meta charset="utf-8" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"></script>
+    </head>
+    <body>
+        <section>
+            <h1>问答测试</h1>
+            <p>
+                <form method='post' id='queryForm'>
+                    <table>
+                        <tr>
+                            <td>问题： <input type="text" id="question" /></td>
+                            <td><button type="submit" id="queryButton">提问</button></td>
+                        </tr>
+                    </table>
+                    <table id="qa_output">
+                    </table>
+                </form>
+            </p>
+            <h1>语料库测试</h1>
+            <p>
+                <form method='post' id='corpus'>
+                    <table>
+                        <tr>
+                            <td>id: <input type="text" id="corpus_id" /></td>
+                            <td>corpus:<input type="text" id="corpus" /></td>
+                            <td>type:<input type="text" id="corpus_type" /></td>
+                            <td>date:<input type="text" id="corpus_date" /></td>
+                        </tr>
+                        <tr>
+                            <td><button type="submit" id="getCorpusButtton">get</button></td>
+                            <td><button type="submit" id="addCorpusButtton">add</button></td>
+                            <td><button type="submit" id="deleteCorpusButton">remove</button></td>
+                            <td><button type="submit" id="updateCorpusButton">update</button></td>
+                        </tr>
+                    </table>
+                    <table id="corpus_output">
+                    </table>
+                </form>
+            </p>
+            <h1>问答知识库测试</h1>
+            <p>
+                <form method='post' id='knowledge'>
+                    <table>
+                        <tr>
+                            <td>id: <input type="text" id="knowledge_id" /></td>
+                            <td>question: <input type="text" id="knowledge_question" /></td>
+                            <td>answer: <input type="text" id="knowledge_answer" /></td>
+                            <td>type: <input type="text" id="knowledge_type" /></td>
+                            <td>expire date: <input type="text" id="knowledge_date" /></td>
+                        </tr>
+                        <tr>
+                            <td><button type="submit" id="getKnowledgeButtton">get</button></td>
+                            <td><button type="submit" id="addKnowledgeButtton">add</button></td>
+                            <td><button type="submit" id="deleteKnowledgeButton">remove</button></td>
+                            <td><button type="submit" id="updateKnowledgeButton">update</button></td>
+                        </tr>
+                    </table>
+                    <table id="knowledge_output">
+                    </table>
+                </form>
+            </p>
+            <h1>用户问题测试</h1>
+            <p>
+                <form method='post' id='knowledge'>
+                    <button type="submit" id="showQuestions">show</button><br>
+                    <table id="questions_output">
+                    </table>
+                </form>
+            </p>
+            <h1>聊天历史测试</h1>
+            <p>
+                <form method='post' id='chat'>
+                    <button type="submit" id="showHistory">show</button><br>
+                    <table id="history_output">
+                    </table>
+                </form>
+            </p>
+        </section>
+        <script>
+            $(document).ready(function() {
+                var socket = io('/socket');
+                socket.on('connect',function() {
+                    console.log('connected to server!');
+                    // send join_room event right after connect socket
+                    socket.emit('listening');
+                });
+                socket.on('msg', function(data) {
+                    response = data['answers'];
+                    console.log('received message!');
+                    for (var answer in response) {
+                        var weight = response[answer][0];
+                        var question = response[answer][1];
+                        $("#qa_output").prepend("<tr><td>" + question + "</td><td>" + answer + "</td><td>" + weight + "</td></tr>");
                     }
-                };
+                });
+            });
+            $("#queryButton").click(function(e) {
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json; charset=UTF-8",
+                    url: "/qasystem",
+                    data: JSON.stringify({"query": $("#question").val()}),
+                    success: function(data) {
+                        // clear output area for coming answers
+                        $("#qa_output").empty();
+                    }
+                });
+                // prevent jumping to the page being called
+                e.preventDefault();
+            });
+            $("#getCorpusButtton").click(function(e) {
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json; charset=UTF-8",
+                    url: "/corpus",
+                    data: JSON.stringify({"mode": "get", "data": []}),
+                    success: function(data) {
+                        $("#corpus_output").empty();
+                        if (data["status"] == "faliure") {
+                            $("#corpus_output").append("failed to get data from wd_corpus_lib");
+                        } else {
+                            // list output into a table
+                            $("#corpus_output").append("<tr><th>id</th><th>corpus</th><th>type</th><th>date</th></tr>");
+                            for(var key in data["retval"]) {
+                                d = data["retval"][key];
+                                $("#corpus_output").append("<tr>");
+                                $("#corpus_output").append("<td>" + d[0] + "</td>");
+                                $("#corpus_output").append("<td>" + d[1] + "</td>");
+                                $("#corpus_output").append("<td>" + d[2] + "</td>");
+                                $("#corpus_output").append("<td>" + d[3] + "</td>");
+                                $("#corpus_output").append("</tr>");
+                            }
+                        }
+                    } // on success method
+                }); // end ajax
+                e.preventDefault();
+            }); // end click method
+            $("#addCorpusButtton").click(function(e) {
+                if (!$("#corpus").val() || $("#corpus").val().length == 0) {
+                    alert("corpus must be given!");
+                    return;
+                }
+                if (isNaN($("#corpus_type").val())) {
+                    alert("corpus type must be given!");
+                    return;
+                }
+                if (new Date($("#corpus_date").val()) === "Invalid Date" || isNaN(new Date($("#corpus_date").val()))) {
+                    alert("corpus date is invalid!");
+                    return;
+                }
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json; charset=UTF-8",
+                    url: "/corpus",
+                    data: JSON.stringify({"mode": "add", "data": [$("#corpus").val(), Number($("#corpus_type").val()), $("#corpus_date").val()]}),
+                    success: function(data) {
+                        $("#corpus_output").empty();
+                        if (data["status"] == "success") {
+                            alert("added successfully!");
+                        } else {
+                            alert("failed to add!");
+                        }
+                    }
+                });
+                e.preventDefault();
+            }); // end add method
+            $("#deleteCorpusButton").click(function(e) {
+                if (isNaN($("#corpus_id").val())) {
+                    alert("corpus id must be given!");
+                    return;
+                }
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json; charset=UTF-8",
+                    url: "/corpus",
+                    data: JSON.stringify({"mode": "delete", "data": Number($("#corpus_id").val())}),
+                    success: function(data) {
+                        $("#corpus_output").empty();
+                        if (data["status"] == "success") {
+                            alert("deleted successfully!");
+                        } else {
+                            alert("failed to delete!");
+                        }
+                    }
+                });
+                e.preventDefault();
+            });
+            $("#updateCorpusButton").click(function(e) {
+                if (isNaN($("#corpus_id").val())) {
+                    alert("corpus id must be given!");
+                    return;
+                }
+                if (!$("#corpus").val() || $("#corpus").val().length == 0) {
+                    alert("corpus must ben given!");
+                    return;
+                }
+                if (isNaN($("#corpus_type").val())) {
+                    alert("corpus type must be given!");
+                    return;
+                }
+                if (new Date($("#corpus_date").val()) === "Invalid Date" || isNaN(new Date($("#corpus_date").val()))) {
+                    alert("corpus date is invalid!");
+                    return;
+                }
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json; charset=UTF-8",
+                    url: "/corpus",
+                    data: JSON.stringify({"mode": "update", "data": [Number($("#corpus_id").val()), $("#corpus").val(), Number($("#corpus_type").val()), $("#corpus_date").val()]}),
+                    success: function(data) {
+                        $("#corpus_output").empty();
+                        if (data["status"] == "success") {
+                            alert("updated successfully!");
+                        } else {
+                            alert("failed to update!");
+                        }
+                    }
+                });
+                e.preventDefault();
+            });
+            $("#getKnowledgeButtton").click(function(e) {
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json; charset=UTF-8",
+                    url: "/knowledge",
+                    data: JSON.stringify({"mode": "get", "data": []}),
+                    success: function(data) {
+                        $("#knowledge_output").empty();
+                        if (data["status"] == "failure") {
+                            $("#knowledge_output").append("failed to get data from wd_qa_knowledge!");
+                        } else {
+                            $("#knowledge_output").append("<tr><th>id</th><th>question</th><th>answer</th><th>type</th><th>expiry date</th></tr>");
+                            for(var key in data["retval"]) {
+                                d = data["retval"][key];
+                                $("#knowledge_output").append("<tr>");
+                                $("#knowledge_output").append("<td>" + d[0] + "</td>");
+                                $("#knowledge_output").append("<td>" + d[1] + "</td>");
+                                $("#knowledge_output").append("<td>" + d[2] + "</td>");
+                                $("#knowledge_output").append("<td>" + d[3] + "</td>");
+                                $("#knowledge_output").append("<td>" + d[4] + "</td>");
+                                $("#knowledge_output").append("</tr>");
+                            }
+                        }
+                    }
+                });
+                e.preventDefault();
+            });
+            $("#addKnowledgeButtton").click(function(e) {
+                if (!$("#knowledge_question").val() || $("#knowledge_question").val().length == 0) {
+                    alert("question must be given!");
+                    return;
+                }
+                if (!$("#knowledge_answer").val() || $("#knowledge_answer").val().length == 0) {
+                    alert("answer must be given!");
+                    return;
+                }
+                if (isNaN($("#knowledge_type").val())) {
+                    alert("type must be given!");
+                    return;
+                }
+                if (new Date($("#knowledge_date").val()) == "Invalid Date" || isNaN(new Date($("#knowledge_date").val()))) {
+                    alert("date must be given!");
+                    return;
+                }
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json; charset=UTF-8",
+                    url: "/knowledge",
+                    data: JSON.stringify({"mode": "add", "data": [$("#knowledge_question").val(), $("#knowledge_answer").val(), Number($("#knowledge_type").val()), $("#knowledge_date").val()]}),
+                    success: function(data) {
+                        $("#knowledge_output").empty();
+                        if (data["status"] == "success") {
+                            alert("added successfully!");
+                        } else {
+                            alert("failed to add!");
+                        }
+                    }
+                });
+                e.preventDefault();
+            });
+            $("#deleteKnowledgeButton").click(function(e) {
+                if (isNaN($("#knowledge_id").val())) {
+                    alert("knowledge id must be given!");
+                    return;
+                }
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json; charset=UTF-8",
+                    url: "/knowledge",
+                    data: JSON.stringify({"mode": "delete", "data": Number($("#knowledge_id").val())}),
+                    success: function(data) {
+                        $("#knowledge_output").empty();
+                        if (data["status"] == "success") {
+                            alert("deleted successfully!");
+                        } else {
+                            alert("failed to delete!");
+                        }
+                    }
+                });
+                e.preventDefault();
+            });
+            $("#updateKnowledgeButton").click(function(e) {
+                if (isNaN($("#knowledge_id").val())) {
+                    alert("knowledge id must be given!");
+                    return;
+                }
+                if (!$("#knowledge_question").val() || $("#knowledge_question").val().length == 0) {
+                    alert("question must be given!");
+                    return;
+                }
+                if (!$("#knowledge_answer").val() || $("#knowledge_answer").val().length == 0) {
+                    alert("answer must be given!");
+                    return;
+                }
+                if (isNaN($("#knowledge_type").val())) {
+                    alert("type must be given!");
+                    return;
+                }
+                if (new Date($("#knowledge_date").val()) == "Invalid Date" || isNaN(new Date($("#knowledge_date").val()))) {
+                    alert("date must be given!");
+                    return;
+                }
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json; charset=UTF-8",
+                    url: "/knowledge",
+                    data: JSON.stringify({"mode": "update", "data": [Number($("#knowledge_id").val()), $("#knowledge_question").val(), $("#knowledge_answer").val(), Number($("#knowledge_type").val()), $("#knowledge_date").val()]}),
+                    success: function(data) {
+                        $("#knowledge_output").empty();
+                        if (data["status"] == "success") {
+                            alert("updated successfully!");
+                        } else {
+                            alert("failed to update!");
+                        }
+                    }
+                });
+                e.preventDefault();
+            });
+            $("#showQuestions").click(function(e) {
+                $.ajax({
+                    type: "GET",
+                    url: "/cust_questions",
+                    success: function(data) {
+                        $("#questions_output").empty();
+                        $("#questions_output").append("<tr><th>id</th><th>question</th><th>status</th><th>date</th></tr>");
+                        for(var key in data) {
+                            d = data[key];
+                            $("#questions_output").append("<tr>");
+                            $("#questions_output").append("<td>" + d[0] + "</td>");
+                            $("#questions_output").append("<td>" + d[1] + "</td>");
+                            $("#questions_output").append("<td>" + d[2] + "</td>");
+                            $("#questions_output").append("<td>" + d[3] + "</td>");
+                            $("#questions_output").append("</tr>");
+                        }
+                    }
+                });
+                e.preventDefault();
+            });
+            $("#showHistory").click(function(e) {
+                $.ajax({
+                    type: "GET",
+                    url: "/chat_history",
+                    success: function(data) {
+                        $("#history_output").empty();
+                        $("#history_output").append("<tr><th>id</th><th>time</th><th>question</th><th>answer</th><th>user id</th></tr>");
+                        for (var key in data) {
+                            d = data[key];
+                            $("#history_output").append("<tr>");
+                            $("#history_output").append("<td>" + d[0] + "</td>");
+                            $("#history_output").append("<td>" + d[1] + "</td>");
+                            $("#history_output").append("<td>" + d[2] + "</td>");
+                            $("#history_output").append("<td>" + d[3] + "</td>");
+                            $("#history_output").append("<td>" + d[4] + "</td>");
+                            $("#history_output").append("</tr>");
+                        }
+                    }
+                });
+                e.preventDefault();
+            });
+        </script>
+    </body>
+</html>
 
-            if (!doc.addEventListener) return;
-            win.addEventListener(resizeEvt, recalc, false);
-            doc.addEventListener('DOMContentLoaded', recalc, false);
-        })(document, window);
-        Array.prototype.remove = function(val) {
-            var index = this.indexOf(val);
-            if (index > -1) {
-                this.splice(index, 1);
-            }
-        };</script><style>.loadEffect{
-	        position: fixed;
-	        left:0;
-	        right:0;
-	        top:0;
-	        bottom: 0;
-	        z-index: 999;
-	        display: none;
-	    }
-	    .loadEffect .tips{
-	        position: absolute;
-	        left: 0;
-	        right: 0;
-	        top: 40%;
-	        margin: 0 auto;
-	        width: 110px;
-	        height: 40px;
-	        background-color: #000;
-	        color: #fff;
-	        text-align: center;
-	        line-height: 40px;
-	        border-radius: 5px;
-	    }</style><link href=./static/css/app.ef7e735111f0d1c79495641a220af81a.css rel=stylesheet></head><body><div id=app></div><div class=loadEffect><div class=tips>正在加载中...</div></div><script type=text/javascript src=./static/js/manifest.864b54bdf392ef1fc002.1571307979278.js></script><script type=text/javascript src=./static/js/vendor.7020e07192f30e2d2e4a.1571307979278.js></script><script type=text/javascript src=./static/js/app.b20c6471c5da78df29c9.1571307979278.js></script></body></html>

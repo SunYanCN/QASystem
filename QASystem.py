@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 
+import sys;
 import operator;
-from math import exp;
+from math import exp, log;
 from os.path import exists, join;
 from search_engine import SearchEngine;
 from Predictor import Predictor;
@@ -28,7 +29,10 @@ class QASystem(object):
         answer_totalscores = dict();
         for answer, match in answer_scores.items():
             _, relevance = self.predictor.predict(question, answer);
-            answer_totalscores[answer] = (exp(match[0]) + exp(relevance), match[1],);
+            if match[0] > sys.float_info.min:
+                answer_totalscores[answer] = (log(match[0]) * relevance, match[1],);
+            else:
+                answer_totalscores[answer] = (0, match[1],);
         return answer_totalscores;
     
     def updateDB(self, file):

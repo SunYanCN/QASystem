@@ -246,4 +246,4 @@ if __name__ == "__main__":
         os.system("bash stop_workers.sh");
         exit(0);
     signal.signal(signal.SIGINT, stop_workers);
-    socketio.run(app, host = '172.17.0.2', port = 5000);
+    socketio.run(app, host = '192.168.1.102', port = 5000);
