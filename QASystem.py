@@ -29,10 +29,7 @@ class QASystem(object):
         answer_totalscores = dict();
         for answer, match in answer_scores.items():
             _, relevance = self.predictor.predict(question, answer);
-            if match[0] > sys.float_info.min:
-                answer_totalscores[answer] = (log(match[0]) * relevance, match[1],);
-            else:
-                answer_totalscores[answer] = (log(sys.float_info.min) * relevance, match[1],);
+            answer_totalscores[answer] = (log(max(match[0], sys.float_info.min)) * relevance, match[1],);
         return answer_totalscores;
     
     def updateDB(self, file):
